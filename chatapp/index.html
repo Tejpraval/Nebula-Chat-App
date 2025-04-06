@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <!-- Meta tags and basic page setup -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Chat - Real-time WebSocket Chat</title>
+     <!-- External resources -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Vue app container -->
+    <div id="app">
+        <!-- Chat container with connection status class binding -->
+        <div class="chat-container" :class="{ 'active': isConnected }">
+            <!-- Animated Nebula background effect -->
+            <div class="nebula-bg"></div>
+            
+            <!-- Connection status indicator -->
+            <div class="connection-status">
+                <span class="status-dot" :class="{ 'connected': isConnected, 'disconnected': !isConnected }"></span>
+                {{ isConnected ? 'Connected to Nebula Network' : 'Connecting...' }}
+            </div>
+            
+            <!-- User setup modal - shown when username isn't set -->
+            <div class="user-setup" v-if="!username">
+                <div class="setup-content">
+                    <h2>Welcome to Nebula Chat</h2>
+                    <p>Enter your cosmic identity to begin chatting across the stars</p>
+                    <!-- Avatar selection grid -->
+                    <div class="avatar-selection">
+                        <div v-for="avatar in avatars" :key="avatar" 
+                             @click="selectedAvatar = avatar" 
+                             :class="{ 'selected': selectedAvatar === avatar }">
+                            <img :src="`avatars/${avatar}.png`" :alt="avatar">
+                        </div>
+                    </div>
+                    <!-- Username input -->
+                    <input type="text" v-model="tempUsername" placeholder="Your cosmic name" maxlength="20" 
+                           @keyup.enter="setUsername">
+                    <button @click="setUsername" class="glow-button">Embark</button>
+                </div>
+            </div>
+            
+             <!-- Main chat interface - shown after username is set -->
+            <div class="chat-interface" v-if="username">
+                <!-- Online users sidebar -->
+                <div class="user-list">
+                    <h3>Cosmic Travelers <span>({{ onlineUsers.length }})</span></h3>
+                    <div class="user" v-for="user in onlineUsers" :key="user.id" 
+                         @click="startPrivateMessage(user.username)"
+                         :class="{ 'typing': userTyping && userTyping.username === user.username }">
+                        <img :src="`avatars/${user.avatar}.png`" :alt="user.username">
+                        <span>{{ user.username }}</span>
+                        <span class="typing-indicator" v-if="userTyping && userTyping.username === user.username">
+                            typing...
+                        </span>
+                    </div>
+                </div>
+                
+                <!--Main Chat area -->
+                <div class="chat-area">
+                    <!-- Message history container -->
+                    <div class="message-history" ref="messageHistory">
+                        <!-- Loop through all messages -->
+                        <div v-for="(message, index) in messages" :key="index" 
+                             class="message" :class="{
+                                 'sent': message.username === username,
+                                 'received': message.username !== username,
+                                 'private': message.private,
+                                 'system': message.system
+                             }">
+                              <!-- Regular message content -->
+                            <div class="message-content" v-if="!message.system">
+                                <div class="message-header" v-if="message.username !== username">
+                                    <img :src="`avatars/${message.avatar}.png`" :alt="message.username">
+                                    <span class="username">{{ message.username }}</span>
+                                    <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
+                                </div>
+                                <!-- Message bubble -->
+                                <div class="message-bubble">
+                                    <span v-if="message.private" class="private-badge">Private</span>
+                                    <p>{{ message.text }}</p>
+                                    <!-- Message reactions -->
+                                    <div class="message-reactions" v-if="message.reactions && message.reactions.length">
+                                        <span v-for="(reaction, i) in message.reactions" :key="i" 
+                                              @click="addReaction(message.id, reaction)">
+                                            {{ reaction }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Message footer for sent messages -->
+                                <div class="message-footer" v-if="message.username === username">
+                                    <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
+                                    <span class="status" :class="{ 'seen': message.seen }">
+                                        <i class="fas fa-check-double"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- System message (join/leave notifications) -->
+                            <div class="system-message" v-if="message.system">
+                                <img :src="`avatars/${message.avatar}.png`" :alt="message.username" v-if="message.avatar">
+                                <span>{{ message.text }}</span>
+                                <span class="timestamp" v-if="message.timestamp">{{ formatTime(message.timestamp) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Typing indicator -->
+                    <div class="typing-container" v-if="userTyping && userTyping.username !== username">
+                        <div class="typing-bubble">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                        <span>{{ userTyping.username }} is typing...</span>
+                    </div>
+                    
+                    <!-- Message input area-->
+                    <div class="message-input">
+                        <!-- Emoji picker (hidden by default) -->
+                        <div class="emoji-picker" v-if="showEmojiPicker">
+                            <div class="emoji-category" v-for="(emojis, category) in emojiCategories" :key="category">
+                                <h4>{{ category }}</h4>
+                                <div class="emoji-grid">
+                                    <span v-for="(emoji, i) in emojis" :key="i" @click="addEmoji(emoji, $event)">
+                                        {{ emoji }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="emoji-button" @click="toggleEmojiPicker($event)">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <!-- Main message input -->
+                        <input type="text" v-model="newMessage" placeholder="Send a message across the cosmos..." 
+                               @keyup.enter="sendMessage" 
+                               @input="handleTyping"
+                               @focus="scrollToBottom">
+                         <!-- Send button -->
+                        <button class="send-button" @click="sendMessage" :disabled="!newMessage.trim()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Connection animation (shown during connection)-->
+        <div class="connection-animation" v-if="connecting">
+            <div class="orbit"></div>
+            <div class="orbit"></div>
+            <div class="orbit"></div>
+            <div class="central-dot"></div>
+        </div>
+    </div>
+    <!-- Main app JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
