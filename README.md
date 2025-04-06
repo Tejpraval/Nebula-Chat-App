@@ -108,9 +108,6 @@ WebSocket MDN Docs : https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 Vue.js Composition API : https://vuejs.org/guide/extras/composition-api-faq.html
 ws Library Docs : https://github.com/websockets/ws
 
-## 📜 License
-MIT © [Tej Praval]
-
 
 ## 🤝 Contributing
 PRs welcome! Please open an issue first to discuss changes.
