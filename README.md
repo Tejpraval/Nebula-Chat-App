@@ -2,7 +2,7 @@
 Nebula Chat - A real-time chat application built with Vue.js and WebSockets featuring private messaging, typing indicators, online user lists, and cosmic-themed UI. Perfect for learning real-time communication or as a base for chat applications.
 # 🌌 Nebula Chat - Real-Time WebSocket Chat Application
 A feature-rich real-time chat application with Vue.js and WebSockets, offering a cosmic-themed UI with modern chat features.
-
+![Screenshot 2025-04-07 031531](https://github.com/user-attachments/assets/fe513861-75f8-4f72-a41c-8068971068e0)
 ## ✨ Features
 
 - **Real-time messaging** via WebSocket protocol
@@ -104,9 +104,9 @@ and then run in
 
 
 📚 Learning Resources
-WebSocket MDN Docs  
-Vue.js Composition API
-ws Library Docs  
+WebSocket MDN Docs : https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+Vue.js Composition API : https://vuejs.org/guide/extras/composition-api-faq.html
+ws Library Docs : https://github.com/websockets/ws
 
 ## 📜 License
 MIT © [Tej Praval]
