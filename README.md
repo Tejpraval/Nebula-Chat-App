@@ -53,7 +53,7 @@ A feature-rich real-time chat application with Vue.js and WebSockets, offering a
     ... (all avatar images)
 4. make sure you installed node.js  (for Windows/Mac: https://nodejs.org/en) and git bash
 5. Verify Installation
-  ```bash
+   ```bash
    * npm install ws
    After installing, check if node and npm are available:
    
@@ -61,14 +61,14 @@ A feature-rich real-time chat application with Vue.js and WebSockets, offering a
    * node -v  # Should show version (e.g., v18.x.x)
    or
    * npm -v   # Should show version (e.g., 9.x.x)
-7. Alternative: Use npx (if you only need a temporary server)
+6. Alternative: Use npx (if you only need a temporary server)
   If you don’t want to install Node.js permanently, you can use npx (comes with Node.js) to run the WebSocket server temporarily:
   bash
   * npx ws --port 8080
   This will start a basic WebSocket server without needing npm install
-8. If You Still Get npm: command not found
+7. If You Still Get npm: command not found
   Windows: Ensure Node.js is added to PATH (reinstall if needed).
-9. How to Navigate to the Correct Directory or PATH
+8. How to Navigate to the Correct Directory or PATH
    # Check current directory
    * pwd
 
@@ -78,7 +78,7 @@ A feature-rich real-time chat application with Vue.js and WebSockets, offering a
    # Change directory (cd) to where your server.js is located:
    * cd path/to/your/project/folder
    (Replace path/to/your/project/folder with the actual folder where server.js exists)
-10. Run the server
+9. Run the server
   * node server.js
 after giving the top commands it should visible like this in bash
 WebSocket server running on ws://localhost:8080
@@ -103,7 +103,7 @@ and then run in
 | Chat Interface | ![Screenshot 2025-04-07 031531](https://github.com/user-attachments/assets/eab01b48-ab71-4891-8c44-0ef9c22bd9f3) |
 
 
-📚 Learning Resources
+## 📚 Learning Resources
 WebSocket MDN Docs : https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 Vue.js Composition API : https://vuejs.org/guide/extras/composition-api-faq.html
 ws Library Docs : https://github.com/websockets/ws
